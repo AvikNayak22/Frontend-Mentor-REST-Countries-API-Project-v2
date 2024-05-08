@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import CountryCard from "./CountryCard";
+import CountriesListSkeleton from "./CountriesListSkeleton";
 
 const CountriesList = ({ query }) => {
   const [countriesData, setCountriesData] = useState([]);
@@ -11,6 +12,10 @@ const CountriesList = ({ query }) => {
         setCountriesData(data);
       });
   }, []);
+
+  if (!countriesData.length) {
+    return <CountriesListSkeleton />;
+  }
 
   return (
     <>

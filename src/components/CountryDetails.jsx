@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./CountryDetails.css";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const CountryDetails = () => {
   const params = useParams();
@@ -26,6 +26,21 @@ const CountryDetails = () => {
             .map((currency) => currency.name)
             .join(", "),
           languages: Object.values(data.languages).join(", "),
+          borders: [],
+        });
+
+        if (!data.borders) {
+          data.borders = [];
+        }
+
+        Promise.all(
+          data.borders.map((border) => {
+            return fetch(`https://restcountries.com/v3.1/alpha/${border}`)
+              .then((res) => res.json())
+              .then(([borderCountry]) => borderCountry.name.common);
+          })
+        ).then((borders) => {
+          setCountryData((prevState) => ({ ...prevState, borders }));
         });
       })
       .catch((err) => {
@@ -84,9 +99,16 @@ const CountryDetails = () => {
                 <span className="languages">{countryData.languages}</span>
               </p>
             </div>
-            <div className="border-countries">
-              <b>Border Countries: </b>
-            </div>
+            {countryData.borders.length !== 0 && (
+              <div className="border-countries">
+                <b>Border Countries: </b>
+                {countryData.borders.map((border) => (
+                  <Link to={`/${border}`} key={border}>
+                    {border}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
