@@ -1,59 +1,75 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { ThemeContext } from "../contexts/ThemeContext";
 import "./CountryDetails.css";
-import { Link, useParams } from "react-router-dom";
 
 const CountryDetails = () => {
+  const [isDark] = useContext(ThemeContext);
+
   const params = useParams();
+  const { state } = useLocation();
   const countryName = params.country;
 
   const [countryData, setCountryData] = useState(null);
   const [notFound, setNotFound] = useState(false);
 
+  function updateCountryData(data) {
+    setCountryData({
+      flag: data.flags.svg,
+      name: data.name.common,
+      nativeName: Object.values(data.name.nativeName)[0].common,
+      population: data.population,
+      region: data.region,
+      subregion: data.subregion,
+      capital: data.capital.join(", "),
+      tld: data.tld.join(", "),
+      currencies: Object.values(data.currencies)
+        .map((currency) => currency.name)
+        .join(", "),
+      languages: Object.values(data.languages).join(", "),
+      borders: [],
+    });
+
+    if (!data.borders) {
+      data.borders = [];
+    }
+
+    Promise.all(
+      data.borders.map((border) => {
+        return fetch(`https://restcountries.com/v3.1/alpha/${border}`)
+          .then((res) => res.json())
+          .then(([borderCountry]) => borderCountry.name.common);
+      })
+    ).then((borders) => {
+      setTimeout(() =>
+        setCountryData((prevState) => ({ ...prevState, borders }))
+      );
+    });
+  }
+
   useEffect(() => {
+    if (state) {
+      updateCountryData(state);
+      return;
+    }
+
     fetch(`https://restcountries.com/v3.1/name/${countryName}?fullText=true`)
       .then((res) => res.json())
       .then(([data]) => {
-        setCountryData({
-          flag: data.flags.svg,
-          name: data.name.common,
-          nativeName: Object.values(data.name.nativeName)[0].common,
-          population: data.population,
-          region: data.region,
-          subregion: data.subregion,
-          capital: data.capital.join(", "),
-          tld: data.tld.join(", "),
-          currencies: Object.values(data.currencies)
-            .map((currency) => currency.name)
-            .join(", "),
-          languages: Object.values(data.languages).join(", "),
-          borders: [],
-        });
-
-        if (!data.borders) {
-          data.borders = [];
-        }
-
-        Promise.all(
-          data.borders.map((border) => {
-            return fetch(`https://restcountries.com/v3.1/alpha/${border}`)
-              .then((res) => res.json())
-              .then(([borderCountry]) => borderCountry.name.common);
-          })
-        ).then((borders) => {
-          setCountryData((prevState) => ({ ...prevState, borders }));
-        });
+        updateCountryData(data);
       })
       .catch((err) => {
         setNotFound(true);
+        console.error(err);
       });
-  }, [countryName]);
+  }, [countryName, state]);
 
   if (notFound) {
     return <div>Country not found.</div>;
   }
 
   return countryData ? (
-    <main>
+    <main className={`${isDark ? "dark" : ""}`}>
       <div className="country-details-container">
         <span className="back-button" onClick={() => history.back()}>
           <i className="fa-solid fa-arrow-left" />
