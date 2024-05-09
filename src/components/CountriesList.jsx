@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+
 import CountryCard from "./CountryCard";
-import CountriesListSkeleton from "./CountriesListSkeleton";
+import CountriesListSkeleton from "./CountriesListSkeleton/CountriesListSkeleton";
 
 const CountriesList = ({ query }) => {
   const [countriesData, setCountriesData] = useState([]);
@@ -21,8 +22,10 @@ const CountriesList = ({ query }) => {
     <>
       <div className="countries-container">
         {countriesData
-          .filter((country) =>
-            country.name.common.toLowerCase().includes(query)
+          .filter(
+            (country) =>
+              country.name.common.toLowerCase().includes(query) ||
+              country.region.toLowerCase().includes(query)
           )
           .map((country) => {
             return (

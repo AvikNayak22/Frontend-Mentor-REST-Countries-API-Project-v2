@@ -63,15 +63,13 @@ a {
   max-width: 1200px;
   margin-top: 16px;
   margin-inline: auto;
-  display: flex;
-  gap: 64px;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 32px;
 }
 
 .country-card {
   display: inline-block;
-  width: 250px;
   border-radius: 8px;
   overflow: hidden;
   padding-bottom: 18px;
@@ -146,11 +144,12 @@ a {
   color: var(--text-color);
 }
 
-.error-page {
+.error-page,
+.loading-page {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 89vh;
 }
 
 @media (max-width: 768px) {

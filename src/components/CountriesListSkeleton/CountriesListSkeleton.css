@@ -1,0 +1,33 @@
+main .skeleton-card {
+  --skeleton-color: hsl(0, 0%, 78%);
+}
+
+main.dark .skeleton-card {
+  --skeleton-color: hsl(208, 21%, 34%);
+}
+
+.skeleton-card {
+  height: 338px;
+  background-color: var(--elements-color);
+}
+
+.skeleton-card .flag-container {
+  height: 140px;
+  background-color: var(--skeleton-color);
+}
+
+.skeleton-card .card-title {
+  height: 32px;
+  background-color: var(--skeleton-color);
+  border-radius: 4px;
+}
+
+.skeleton-card p {
+  height: 22px;
+  border-radius: 4px;
+  background-color: var(--skeleton-color);
+}
+
+.skeleton-card p:last-child {
+  width: 60%;
+}
